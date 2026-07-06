@@ -1,0 +1,175 @@
+{{ define "title"}}
+{{ t "about.page_title" $.Messages }}
+{{ end }}
+
+{{ define "top_css"}}
+{{ end }}
+
+{{ define "username"}}
+{{ .username }}
+{{ end }}
+
+{{ define "page_title"}}
+{{ t "about.page_heading" $.Messages }}
+{{ end }}
+
+{{ define "page_content"}}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ t "about.card_title" $.Messages }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="version" class="control-label">{{ t "about.current_version" $.Messages }}</label>
+                            <input type="text" class="form-control" id="version" value="{{ .appVersion }}" readonly>
+                        </div>
+{{ if .gitCommit }}
+                        <div class="form-group">
+                            <label for="version" class="control-label">{{ t "about.git_commit" $.Messages }}</label>
+                            <input type="text" class="form-control" id="version" value="{{ .gitCommit }}" readonly>
+                        </div>
+{{ end }}
+                        <div class="form-group">
+                            <label for="currentReleaseDate" class="control-label">{{ t "about.release_date" $.Messages }}</label>
+                            <input type="text" class="form-control" id="currentReleaseDate" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="latestRelease" class="control-label">{{ t "about.latest_version" $.Messages }}</label>
+                            <input type="text" class="form-control" id="latestRelease" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="latestReleaseDate" class="control-label">{{ t "about.latest_release_date" $.Messages }}</label>
+                            <input type="text" class="form-control" id="latestReleaseDate" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">{{ t "about.author" $.Messages }}</label>
+                            <div id="author">
+                                <a id="authorLink">
+                                    <img id="authorImage"
+                                         style="width: 50px; height: 50px; border-radius: 50%; border: 1px solid #000;">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">{{ t "about.secondary_author" $.Messages }}</label>
+                            <div><b>blues</b></div>
+                        </div>
+                        <strong>{{ t "about.copyright" $.Messages }} &copy;
+                            <script>document.write(new Date().getFullYear())</script>
+                            <a href="https://github.com/ngoduykhanh/wireguard-ui">Wireguard UI</a>.
+                        </strong> {{ t "about.all_rights" $.Messages }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ t "wg_install.card_title" $.Messages }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="control-label">{{ t "wg_install.status" $.Messages }}</label>
+                            <div id="wg-install-status">
+                                <span class="text-muted">{{ t "wg_install.checking" $.Messages }}</span>
+                            </div>
+                        </div>
+                        <div class="form-group" id="wg-install-details" style="display:none">
+                            <label class="control-label">{{ t "wg_install.details" $.Messages }}</label>
+                            <ul class="list-unstyled" id="wg-status-list">
+                                <li id="wg-status-installed"><i class="fas fa-spinner fa-pulse"></i> {{ t "wg_install.binary" $.Messages }}</li>
+                                <li id="wg-status-module"><i class="fas fa-spinner fa-pulse"></i> {{ t "wg_install.module" $.Messages }}</li>
+                                <li id="wg-status-version"><i class="fas fa-spinner fa-pulse"></i> {{ t "wg_install.version" $.Messages }}</li>
+                            </ul>
+                        </div>
+                        <div id="wg-install-actions">
+                            <button id="btn-install-wg" class="btn btn-success" style="display:none">
+                                <i class="fas fa-download"></i> {{ t "wg_install.install_btn" $.Messages }}
+                            </button>
+                            <button id="btn-refresh-wg-status" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-sync-alt"></i> {{ t "wg_install.refresh" $.Messages }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}
+
+{{ define "bottom_js"}}
+<script>
+    function checkWireGuardStatus() {
+        $("#wg-install-status").html('<span class="text-muted"><i class="fas fa-spinner fa-pulse"></i> {{ t "wg_install.checking" $.Messages }}</span>');
+        $("#btn-install-wg").hide();
+        $("#wg-install-details").hide();
+        $.ajax({
+            cache: false,
+            method: 'GET',
+            url: '{{.basePath}}/api/wireguard-status',
+            dataType: 'json',
+            success: function (data) {
+                $("#wg-install-details").show();
+                $("#wg-status-installed").html('<i class="fas fa-check-circle text-success"></i> {{ t "wg_install.binary" $.Messages }}');
+                $("#wg-status-module").html('<i class="fas fa-check-circle text-success"></i> {{ t "wg_install.module" $.Messages }}');
+                $("#wg-status-version").html('<i class="fas fa-check-circle text-success"></i> {{ t "wg_install.version" $.Messages }}: ' + (data.version || 'N/A'));
+
+                if (data.installed) {
+                    $("#wg-install-status").html('<span class="text-success"><i class="fas fa-check-circle"></i> {{ t "wg_install.installed" $.Messages }}</span>');
+                    $("#btn-install-wg").html('<i class="fas fa-sync-alt"></i> {{ t "wg_install.reinstall_btn" $.Messages }}').show();
+                } else {
+                    $("#wg-install-status").html('<span class="text-danger"><i class="fas fa-times-circle"></i> {{ t "wg_install.not_installed" $.Messages }}</span>');
+                    $("#btn-install-wg").html('<i class="fas fa-download"></i> {{ t "wg_install.install_btn" $.Messages }}').show();
+                }
+            },
+            error: function () {
+                $("#wg-install-status").html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> {{ t "wg_install.check_error" $.Messages }}</span>');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        checkWireGuardStatus();
+
+        $("#btn-install-wg").click(function () {
+            const btn = $(this);
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-pulse"></i> {{ t "wg_install.installing" $.Messages }}');
+            $.ajax({
+                cache: false,
+                method: 'POST',
+                url: '{{.basePath}}/api/install-wireguard',
+                dataType: 'json',
+                contentType: "application/json",
+                success: function (data) {
+                    toastr.success(data.message);
+                    setTimeout(checkWireGuardStatus, 5000);
+                },
+                error: function () {
+                    toastr.error('{{ t "wg_install.install_error" $.Messages }}');
+                    btn.prop('disabled', false);
+                    checkWireGuardStatus();
+                }
+            });
+        });
+
+        $("#btn-refresh-wg-status").click(function () {
+            checkWireGuardStatus();
+        });
+
+        $("#currentReleaseDate").attr("value", new Date().toISOString().split("T")[0]);
+        $("#latestRelease").attr("value", '{{ .appVersion }}');
+        $("#latestReleaseDate").attr("value", new Date().toISOString().split("T")[0]);
+        $("#author").attr("value", 'WireGuard UI');
+        $("#authorImage").attr("src", '');
+        $("#authorImage").after("<b>  WireGuard UI</b>");
+        $("#authorLink").attr("href", 'https://github.com/ngoduykhanh/wireguard-ui');
+    });
+
+    $(document).ajaxStop(function () {
+    });
+</script>
+{{ end }}

@@ -1,0 +1,17 @@
+[Unit]
+Description=WireGuard UI
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/wireguard-ui
+ExecStart=/opt/wireguard-ui/wireguard-ui
+Restart=on-failure
+RestartSec=5
+Environment=WGUI_USERNAME=admin
+Environment=WGUI_PASSWORD=admin
+Environment=WGUI_SESSION_SECRET=b941beb14dfec849626028f17bd2ce8f3ae8e507eaf87cfd8783385de9c82760
+
+[Install]
+WantedBy=multi-user.target

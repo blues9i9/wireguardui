@@ -1,0 +1,75 @@
+{{define "title"}}
+{{ t "status.page_title" $.Messages }}
+{{end}}
+
+{{define "top_css"}}
+{{end}}
+
+{{define "username"}}
+{{ .username }}
+{{end}}
+
+{{define "page_title"}}
+{{ t "status.page_heading" $.Messages }}
+{{end}}
+
+{{define "page_content"}}
+<script>
+  function bytesToHumanReadable(temporal) {
+    const units = [" ", " K", " M", " G", " T", " P", " E", " Z", " Y"]
+    let pow = 0
+
+    while (temporal > 1024) {
+      temporal /= 1024
+      pow ++
+      if (pow == units.length-1) break
+    }
+
+    return parseFloat(temporal.toFixed(2)) + units[pow]+"B"
+  }
+</script>
+<section class="content">
+    <div class="container-fluid">
+        {{ if .error }}
+        <div class="alert alert-warning" role="alert">{{.error}}</div>
+        {{ end}}
+        {{ range $dev := .devices }}
+            <table class="table table-sm">
+                <caption>设备 {{ $dev.Name }} 的已连接对等端列表</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t "status.col_index" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_name" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_email" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_allocated_ip" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_endpoint" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_public_key" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_received" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_sent" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_connected" $.Messages }}</th>
+                  <th scope="col">{{ t "status.col_last_handshake" $.Messages }}</th>
+                </tr>
+              </thead>
+              <tbody>
+              {{ range $idx, $peer := $dev.Peers }}
+              <tr {{ if $peer.Connected }} class="table-success" {{ end }}>
+                <th scope="row">{{ $idx }}</th>
+                <td>{{ $peer.Name }}</td>
+                <td>{{ $peer.Email }}</td>
+                <td>{{ $peer.AllocatedIP }}</td>
+                <td>{{ $peer.Endpoint }}</td>
+                <td>{{ $peer.PublicKey }}</td>
+                <td title="{{ $peer.ReceivedBytes }} Bytes"><script>document.write(bytesToHumanReadable({{ $peer.ReceivedBytes }}))</script></td>
+                <td title="{{ $peer.TransmitBytes }} Bytes"><script>document.write(bytesToHumanReadable({{ $peer.TransmitBytes }}))</script></td>
+                <td>{{ if $peer.Connected }}{{ t "status.connected_check" $.Messages }}{{end}}</td>
+                <td>{{ $peer.LastHandshakeTime.Format "2006-01-02 15:04:05 MST" }}</td>
+               </tr>
+              {{ end }}
+              </tbody>
+            </table>
+        {{ end }}
+    </div>
+</section>
+{{end}}
+{{define "bottom_js"}}
+{{end}}

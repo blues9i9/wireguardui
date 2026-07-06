@@ -1,0 +1,255 @@
+{{define "title"}}
+{{ t "server.page_title" $.Messages }}
+{{end}}
+
+{{define "top_css"}}
+{{end}}
+
+{{define "username"}}
+{{ .username }}
+{{end}}
+
+{{define "page_title"}}
+{{ t "server.page_heading" $.Messages }}
+{{end}}
+
+{{define "page_content"}}
+<section class="content">
+    <div class="container-fluid">
+        <!-- <h5 class="mt-4 mb-2">Wireguard Server</h5> -->
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ t "server.interface_card" $.Messages }}</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form role="form" id="frm_server_interface" name="frm_server_interface">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="addresses" class="control-label">{{ t "server.addresses" $.Messages }}</label>
+                                <input type="text" data-role="tagsinput" class="form-control" id="addresses" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="listen_port">{{ t "server.listen_port" $.Messages }}</label>
+                                <input type="text" class="form-control" id="listen_port" name="listen_port"
+                                    placeholder='{{ t "server.listen_port_placeholder" $.Messages }}' value="{{ .serverInterface.ListenPort }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="post_up">{{ t "server.post_up" $.Messages }}</label>
+                                <input type="text" class="form-control" id="post_up" name="post_up"
+                                       placeholder='{{ t "server.post_up_placeholder" $.Messages }}' value="{{ .serverInterface.PostUp }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="pre_down">{{ t "server.pre_down" $.Messages }}</label>
+                                <input type="text" class="form-control" id="pre_down" name="pre_down"
+                                       placeholder='{{ t "server.pre_down_placeholder" $.Messages }}' value="{{ .serverInterface.PreDown }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="post_down">{{ t "server.post_down" $.Messages }}</label>
+                                <input type="text" class="form-control" id="post_down" name="post_down"
+                                       placeholder='{{ t "server.post_down_placeholder" $.Messages }}' value="{{ .serverInterface.PostDown }}">
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-success">{{ t "common.save" $.Messages }}</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- right column -->
+            <div class="col-md-6">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ t "server.keypair_card" $.Messages }}</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form role="form">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="private_key">{{ t "server.private_key" $.Messages }}</label>
+                                <div class="input-group input-group">
+                                    <input type="password" class="form-control" id="private_key" placeholder='{{ t "server.private_key_placeholder" $.Messages }}'
+                                        value="{{ .serverKeyPair.PrivateKey }}" disabled>
+                                    <span class="input-group-append">
+                                        <button type="button" class="btn btn-danger btn-flat"
+                                            id="btn_show_private_key">{{ t "server.show_private" $.Messages }}</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="public_key">{{ t "server.public_key" $.Messages }}</label>
+                                <input type="text" class="form-control" id="public_key" placeholder='{{ t "server.public_key_placeholder" $.Messages }}'
+                                    value="{{ .serverKeyPair.PublicKey }}" disabled>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#modal_keypair_confirmation">{{ t "server.generate" $.Messages }}</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+
+<div class="modal fade" id="modal_keypair_confirmation">
+    <div class="modal-dialog">
+        <div class="modal-content bg-warning">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ t "server.keypair_modal" $.Messages }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{{ t "server.keypair_confirm_1" $.Messages }}<br/>
+                {{ t "server.keypair_confirm_2" $.Messages }}</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">{{ t "common.cancel" $.Messages }}</button>
+                <button type="button" class="btn btn-outline-dark" id="btn_generate_confirm">{{ t "server.keypair_generate" $.Messages }}</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{{end}}
+
+{{define "bottom_js"}}
+    <script>
+        function submitServerInterfaceSetting() {
+            const addresses = $("#addresses").val().split(",");
+            const listen_port = $("#listen_port").val();
+            const post_up = $("#post_up").val();
+            const pre_down = $("#pre_down").val();
+            const post_down = $("#post_down").val();
+            const data = {"addresses": addresses, "listen_port": listen_port, "post_up": post_up, "pre_down": pre_down, "post_down": post_down};
+
+            $.ajax({
+                cache: false,
+                method: 'POST',
+                url: '{{.basePath}}/wg-server/interfaces',
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function(data) {
+                    $("#modal_new_client").modal('hide');
+                    toastr.success('{{ t "toast.server_interface_updated" $.Messages }}');
+                },
+                error: function(jqXHR, exception) {
+                    const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                    toastr.error(responseJson['message']);
+                }
+            });
+        }
+    </script>
+    <script>
+        // Wireguard Interface Addresses tag input
+        $("#addresses").tagsInput({
+            'width': '100%',
+            // 'height': '75%',
+            'interactive': true,
+            'defaultText': '{{ t "common.add_more" $ }}',
+            'removeWithBackspace': true,
+            'minChars': 0,
+            'minInputWidth': '100%',
+            'placeholderColor': '#666666'
+        });
+
+        // Load server addresses to the form
+        {{range .serverInterface.Addresses}}
+        $("#addresses").removeTag('{{.}}');
+        $("#addresses").addTag('{{.}}');
+        {{end}}
+
+        // Wireguard Interface Addresses form validation
+        $(document).ready(function () {
+            $.validator.setDefaults({
+                submitHandler: function () {
+                    submitServerInterfaceSetting();
+                }
+            });
+            $("#frm_server_interface").validate({
+                rules: {
+                    listen_port: {
+                        required: true,
+                        digits: true,
+                        range: [1, 65535]
+                    }
+                },
+                messages: {
+                    listen_port: {
+                        required: '{{ t "server.validation_port_required" $.Messages }}',
+                        digits: '{{ t "server.validation_port_digits" $.Messages }}',
+                        range: '{{ t "server.validation_port_range" $.Messages }}'
+                    }
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+
+        // Wireguard Key Pair generation confirmation button
+        $(document).ready(function () {
+            $("#btn_generate_confirm").click(function () {
+                $.ajax({
+                    cache: false,
+                    method: 'POST',
+                    url: '{{.basePath}}/wg-server/keypair',
+                    dataType: 'json',
+                    contentType: "application/json",
+                    success: function(data) {
+                        $("#modal_keypair_confirmation").modal('hide');
+                        toastr.success('{{ t "toast.keypair_generated" $.Messages }}');
+                        // update the UI
+                        $("#private_key").val(data['private_key']);
+                        $("#public_key").val(data['public_key']);
+                    },
+                    error: function(jqXHR, exception) {
+                        const responseJson = jQuery.parseJSON(jqXHR.responseText);
+                        toastr.error(responseJson['message']);
+                    }
+                });
+            });
+        });
+
+        // Show private key button event
+        $(document).ready(function () {
+            $("#btn_show_private_key").click(function () {
+                const privateElement = document.getElementById("private_key");
+                const btnElement = document.getElementById("btn_show_private_key");
+                if (privateElement.type === 'password') {
+                    privateElement.type = 'text';
+                    btnElement.innerText = '{{ t "server.hide_private" $.Messages }}';
+                } else {
+                    privateElement.type = 'password';
+                    btnElement.innerText = '{{ t "server.show_private" $.Messages }}';
+                }
+            });
+        });
+    </script>
+{{end}}
