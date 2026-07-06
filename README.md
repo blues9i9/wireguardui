@@ -1,6 +1,7 @@
 # WireGuard UI
 
 一个用于管理 WireGuard 配置的 Web 用户界面。
+支持中文、邮件集成页面配置、支持一件安装wireguard 
 
 ## 功能特点
 
