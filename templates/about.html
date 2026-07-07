@@ -68,6 +68,35 @@
             <div class="col-md-6">
                 <div class="card card-info">
                     <div class="card-header">
+                        <h3 class="card-title">{{ t "wg_client_download.card_title" $.Messages }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ t "wg_client_download.desc" $.Messages }}</p>
+                        <div class="list-group">
+                            <a href="https://www.wireguard.com/install/#windows-7-8-81-10-11-2022" target="_blank" class="list-group-item list-group-item-action">
+                                <i class="fab fa-windows"></i> {{ t "wg_client_download.windows" $.Messages }}
+                            </a>
+                            <a href="https://www.wireguard.com/install/#macos" target="_blank" class="list-group-item list-group-item-action">
+                                <i class="fab fa-apple"></i> {{ t "wg_client_download.macos" $.Messages }}
+                            </a>
+                            <a href="https://www.wireguard.com/install/#linux-distributions" target="_blank" class="list-group-item list-group-item-action">
+                                <i class="fab fa-linux"></i> {{ t "wg_client_download.linux" $.Messages }}
+                            </a>
+                            <a href="https://play.google.com/store/apps/details?id=com.wireguard.android" target="_blank" class="list-group-item list-group-item-action">
+                                <i class="fab fa-android"></i> {{ t "wg_client_download.android" $.Messages }}
+                            </a>
+                            <a href="https://apps.apple.com/us/app/wireguard/id1441195209" target="_blank" class="list-group-item list-group-item-action">
+                                <i class="fab fa-app-store-ios"></i> {{ t "wg_client_download.ios" $.Messages }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-warning">
+                    <div class="card-header">
                         <h3 class="card-title">{{ t "wg_install.card_title" $.Messages }}</h3>
                     </div>
                     <div class="card-body">

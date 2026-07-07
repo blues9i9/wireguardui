@@ -302,6 +302,14 @@
   "profile.update": "Update",
   "profile.validation_username": "Please enter a username",
 
+  "wg_client_download.card_title": "WireGuard Client Download",
+  "wg_client_download.desc": "Download the official WireGuard client for your device:",
+  "wg_client_download.windows": "Windows",
+  "wg_client_download.macos": "macOS",
+  "wg_client_download.linux": "Linux",
+  "wg_client_download.android": "Android",
+  "wg_client_download.ios": "iOS",
+
   "wg_install.card_title": "WireGuard Installation",
   "wg_install.status": "Installation Status",
   "wg_install.checking": "Checking WireGuard status...",

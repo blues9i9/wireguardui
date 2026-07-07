@@ -302,6 +302,14 @@
   "profile.update": "更新",
   "profile.validation_username": "请输入用户名",
 
+  "wg_client_download.card_title": "WireGuard 客户端下载",
+  "wg_client_download.desc": "下载官方 WireGuard 客户端到您的设备：",
+  "wg_client_download.windows": "Windows",
+  "wg_client_download.macos": "macOS",
+  "wg_client_download.linux": "Linux",
+  "wg_client_download.android": "Android",
+  "wg_client_download.ios": "iOS",
+
   "wg_install.card_title": "WireGuard 安装",
   "wg_install.status": "安装状态",
   "wg_install.checking": "正在检查 WireGuard 状态...",
